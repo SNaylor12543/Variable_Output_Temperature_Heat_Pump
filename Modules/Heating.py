@@ -11,9 +11,9 @@ class Heating_Distribution():
     def output_temp(self, Heating_Requirement, current_temp):
         # P = U * (hydronics_temp - target_temp)
         
-        hydronics_temp = ( Heating_Requirement / self.thermal_conductance ) + current_temp
+        output_temp = ( Heating_Requirement / self.thermal_conductance ) + current_temp
 
-        return hydronics_temp
+        return output_temp
 
 class Heat_Pump():
     def __init__(self, data_path):
