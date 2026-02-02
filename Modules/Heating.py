@@ -47,8 +47,10 @@ class Heat_Pump():
         return COP_interp_field(points).reshape(output_temp.shape)
 
 class Controller():
-    def __init__(self, Heat_Pump):
+    def __init__(self, Heat_Pump, max_heat_pump_power):
         self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
+        
+        self.max_heat_pump_power = max_heat_pump_power
         
         self.HP = Heat_Pump
         self.HD = Heating_Distribution(np.max(Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)")),
@@ -64,6 +66,9 @@ class Controller():
         air_temp_array = Data.column_from_csv(self.tool_output_data, "External temperture (ºC)")
         inside_temp_array = Data.column_from_csv(self.tool_output_data, "Indoor_temperature.FF_θair(ºC)")
         heating_demand_array = Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)") 
+        
+        # limit heating demand to max heat pump power
+        heating_demand_array = np.clip(heating_demand_array, 0, self.max_heat_pump_power)
         
         hydronics_temp_array = self.HD.hydronics_temp(heating_demand_array, inside_temp_array)
         
