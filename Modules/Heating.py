@@ -8,12 +8,12 @@ class Heating_Distribution():
         # Assume a mythical hydronic heating distribution system whose thermal resistance is constant across all flow rates and flow temperatures - runs on unicorn blood ig.
         self.thermal_conductance = max_heating / (max_hydronics_temp - max_target_temp)
 
-    def output_temp(self, Heating_Requirement, current_temp):
-        # P = U * (hydronics_temp - target_temp)
+    def hydronics_temp(self, Heating_Requirement, room_temp):
+        # P = U * (hydronics_temp - room_temp)
         
-        output_temp = ( Heating_Requirement / self.thermal_conductance ) + current_temp
+        hydronics_temp = ( Heating_Requirement / self.thermal_conductance ) + room_temp
 
-        return output_temp
+        return hydronics_temp
 
 class Heat_Pump():
     def __init__(self, data_path):
@@ -37,27 +37,38 @@ class Heat_Pump():
         
         return np.max(Data.column_from_csv(self.data_path, "Flow temperature(°C)"))
     
-    def Calculate_COP(self, outside_temp, output_temp, COP_interp_field):
+    def Calculate_COP(self, output_temp, air_temp, COP_interp_field):
         # Grab COP at a given output temp and outside temp
+        
+        output_temp, air_temp = np.broadcast_arrays(output_temp, air_temp)
+        
+        points = np.stack([output_temp.ravel(), air_temp.ravel()], axis = -1)
 
-        return COP_interp_field(np.array([output_temp, outside_temp]))
+        return COP_interp_field(points).reshape(output_temp.shape)
 
 class Controller():
     def __init__(self, Heat_Pump):
-        self.HP = Heat_Pump
-        
         self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
+        
+        self.HP = Heat_Pump
         self.HD = Heating_Distribution(np.max(Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)")),
                                        np.max(Data.column_from_csv(self.tool_output_data, "Indoor_temperature.Set-point_θair(ºC)")),
                                        self.HP.max_hydronics_temp() )
 
-    def controller(self):
+        self.COP_interp_field = self.HP.interp_init("COP")
 
-        COP_interp_field = self.HP.interp_init("COP")
+    def controller(self):
+        # returns electricity demand in kWh!
         
-        time_array = Data.column_from_csv(self.tool_output_data, "Hour_Simulation")
+        time_array = Data.column_from_csv(self.tool_output_data, "Hour_simulation")
         air_temp_array = Data.column_from_csv(self.tool_output_data, "External temperture (ºC)")
         inside_temp_array = Data.column_from_csv(self.tool_output_data, "Indoor_temperature.FF_θair(ºC)")
         heating_demand_array = Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)") 
-
-        return matrix
+        
+        hydronics_temp_array = self.HD.hydronics_temp(heating_demand_array, inside_temp_array)
+        
+        COP_array = self.HP.Calculate_COP(hydronics_temp_array, air_temp_array, self.COP_interp_field)
+            
+        electricity_demand_array = np.divide(heating_demand_array, COP_array)
+        
+        return time_array, heating_demand_array, electricity_demand_array, COP_array
