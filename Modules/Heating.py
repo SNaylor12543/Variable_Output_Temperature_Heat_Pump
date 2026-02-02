@@ -55,7 +55,7 @@ class Controller():
         self.HP = Heat_Pump
         self.HD = Heating_Distribution(np.max(Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)")),
                                        np.max(Data.column_from_csv(self.tool_output_data, "Indoor_temperature.Set-point_θair(ºC)")),
-                                       self.HP.max_hydronics_temp() )
+                                       self.HP.max_hydronics_temp())
 
         self.COP_interp_field = self.HP.interp_init("COP")
 
