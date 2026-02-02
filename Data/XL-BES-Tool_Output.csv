@@ -1,4 +1,4 @@
-Hour_simuation,External temperture (ºC),Indoor_temperature.FF_θair(ºC) ,Indoor_temperature.Set-point_θair(ºC) ,Heating_thermal_load(kW),Cooling_thermal_load(kW)
+Hour_simuation,External temperture (ºC),Indoor_temperature.FF_θair(ºC),Indoor_temperature.Set-point_θair(ºC),Heating_thermal_load(kW),Cooling_thermal_load(kW)
 1,-18,16.30,16.30,0.00,0.00
 2,-16.6,15.94,15.94,0.00,0.00
 3,-15.3,15.59,15.59,0.00,0.00
