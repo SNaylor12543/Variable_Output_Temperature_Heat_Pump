@@ -13,7 +13,8 @@ class Heating_Distribution():
         
         hydronics_temp = ( Heating_Requirement / self.thermal_conductance ) + room_temp
 
-        return hydronics_temp
+        # return hydronics_temp
+        return 55
 
 class Heat_Pump():
     def __init__(self, data_path):
@@ -46,7 +47,7 @@ class Heat_Pump():
 
         return COP_interp_field(points).reshape(output_temp.shape)
 
-class Controller():
+class HP_Controller():
     def __init__(self, Heat_Pump, max_heat_pump_power):
         self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
         
