@@ -64,6 +64,7 @@ class Controller():
         
         time_array = Data.column_from_csv(self.tool_output_data, "Hour_simulation")
         air_temp_array = Data.column_from_csv(self.tool_output_data, "External temperture (ºC)")
+        # air_temp_array = np.ones(len(air_temp_array)) * 10
         inside_temp_array = Data.column_from_csv(self.tool_output_data, "Indoor_temperature.FF_θair(ºC)")
         heating_demand_array = Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)") 
         
