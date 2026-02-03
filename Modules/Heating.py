@@ -3,7 +3,7 @@ from scipy.interpolate import RegularGridInterpolator as Interpolator
 import matplotlib.pyplot as plt
 import Modules.Data as Data
 
-class Heating_Distribution():
+class Const_Temp_Heating_Distribution():
     def __init__(self, max_heating, max_target_temp, max_hydronics_temp):
         # Assume a mythical hydronic heating distribution system whose thermal resistance is constant across all flow rates and flow temperatures - runs on unicorn blood ig.
         self.thermal_conductance = max_heating / (max_hydronics_temp - max_target_temp)
@@ -13,8 +13,7 @@ class Heating_Distribution():
         
         hydronics_temp = ( Heating_Requirement / self.thermal_conductance ) + room_temp
 
-        # return hydronics_temp
-        return 55
+        return hydronics_temp
 
 class Heat_Pump():
     def __init__(self, data_path):
@@ -48,7 +47,7 @@ class Heat_Pump():
         return COP_interp_field(points).reshape(output_temp.shape)
 
 class HP_Controller():
-    def __init__(self, Heat_Pump, max_heat_pump_power):
+    def __init__(self, Heat_Pump, Heating_Distribution, max_heat_pump_power):
         self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
         
         self.max_heat_pump_power = max_heat_pump_power
