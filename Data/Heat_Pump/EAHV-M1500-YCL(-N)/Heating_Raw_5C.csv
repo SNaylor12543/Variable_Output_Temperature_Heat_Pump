@@ -1,4 +1,4 @@
-Air temperature(°C) ,Flow temperature(°C),Heating capacity (kW),Power consumption (kW),COP,Hot water flow rate (m3/h),Water pressure drop (kPa)
+Air temperature(°C),Flow temperature(°C),Heating capacity (kW),Power consumption (kW),COP,Hot water flow rate (m3/h),Water pressure drop (kPa)
 -20,25,104.3,39.28,2.66,17.9,98
 -15,25,118.8,40.14,2.96,don’t need these values atm,don’t need these values atm
 -10,25,135.6,40.87,3.32,,
