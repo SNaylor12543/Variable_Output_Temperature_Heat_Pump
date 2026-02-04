@@ -77,4 +77,4 @@ class HP_Controller():
             
         electricity_demand_array = np.divide(heating_demand_array, COP_array)
         
-        return time_array, heating_demand_array, electricity_demand_array, COP_array
+        return time_array, heating_demand_array, electricity_demand_array, COP_array, air_temp_array, hydronics_temp_array

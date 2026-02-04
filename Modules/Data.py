@@ -8,7 +8,7 @@ def column_from_csv(File_Path, Column_Name):
     df = pd.read_csv(File_Path)
     Column_Data = df[Column_Name].to_numpy()
 
-    return Column_Data
+    return Column_Data.copy()
 
 def field_data_from_csv(File_Path, metric, air_temp, flow_temp):
     
