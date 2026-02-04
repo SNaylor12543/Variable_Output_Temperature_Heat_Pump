@@ -2,6 +2,46 @@ import numpy as np
 from scipy.interpolate import RegularGridInterpolator as Interpolator
 import matplotlib.pyplot as plt
 import Modules.Data as Data
+import math
+
+class Heating_Distribution():
+    def __init__(self, data_path, max_heating_required, max_cooling_required):
+        self.heating_data_path = data_path + "/Heating.csv"
+        self.cooling_data_path = data_path + "/Cooling.csv"
+
+        self.flow_temp_title = "Water Inlet Temp (°C)"
+        self.heating_demand_title = "Heating Delivered (kW)"
+        self.cooling_demand_title = "Cooling Delivered (kW)"
+
+        # Calculate number of fan coils required to match peak heating demand
+        self.fan_coil_count_heating = math.ceil(max_heating_required/np.max(Data.column_from_csv(self.heating_data_path, self.heating_demand_title)))
+
+        # Calculate number of fan coils required to match peak cooling demand
+        self.fan_coil_count_cooling = math.ceil(max_cooling_required/np.max(Data.column_from_csv(self.cooling_data_path, self.cooling_demand_title)))
+        
+        print(self.fan_coil_count_cooling)
+        print(self.fan_coil_count_heating)
+        
+        self.fan_coil_count = max(self.fan_coil_count_heating, self.fan_coil_count_cooling)
+        print("Number of fan coils required: " + str(self.fan_coil_count))
+        
+    def interp_flow_temp_heating(self, heating_demand):
+        # extract data from .csv file
+    
+        heating_demand_data = Data.column_from_csv(self.heating_data_path, self.heating_demand_title)
+        flow_temp_data = Data.column_from_csv(self.heating_data_path, self.flow_temp_title)
+        
+        return np.interp(heating_demand, self.fan_coil_count * heating_demand_data, flow_temp_data)
+
+    def interp_flow_temp_cooling(self, cooling_demand):
+    
+        cooling_demand_data = Data.column_from_csv(self.cooling_data_path, self.cooling_demand_title)
+        flow_temp_data = Data.column_from_csv(self.cooling_data_path, self.flow_temp_title)
+        
+        print(flow_temp_data)
+        print(self.fan_coil_count_cooling * cooling_demand_data)
+        
+        return np.interp(cooling_demand, self.fan_coil_count * cooling_demand_data, flow_temp_data)
 
 class Const_Temp_Heating_Distribution():
     def __init__(self, max_heating, max_target_temp, max_hydronics_temp):
