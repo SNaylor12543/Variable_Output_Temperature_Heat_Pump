@@ -19,9 +19,6 @@ class Heating_Distribution():
         # Calculate number of fan coils required to match peak cooling demand
         self.fan_coil_count_cooling = math.ceil(max_cooling_required/np.max(Data.column_from_csv(self.cooling_data_path, self.cooling_demand_title)))
         
-        print(self.fan_coil_count_cooling)
-        print(self.fan_coil_count_heating)
-        
         self.fan_coil_count = max(self.fan_coil_count_heating, self.fan_coil_count_cooling)
         print("Number of fan coils required: " + str(self.fan_coil_count))
         
@@ -37,9 +34,6 @@ class Heating_Distribution():
     
         cooling_demand_data = Data.column_from_csv(self.cooling_data_path, self.cooling_demand_title)
         flow_temp_data = Data.column_from_csv(self.cooling_data_path, self.flow_temp_title)
-        
-        print(flow_temp_data)
-        print(self.fan_coil_count_cooling * cooling_demand_data)
         
         return np.interp(cooling_demand, self.fan_coil_count * cooling_demand_data, flow_temp_data)
 
