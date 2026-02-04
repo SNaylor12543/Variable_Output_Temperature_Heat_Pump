@@ -38,16 +38,14 @@ class Heating_Distribution():
         return np.interp(cooling_demand, self.fan_coil_count * cooling_demand_data, flow_temp_data)
 
 class Const_Temp_Heating_Distribution():
-    def __init__(self, max_heating, max_target_temp, max_hydronics_temp):
-        # Assume a mythical hydronic heating distribution system whose thermal resistance is constant across all flow rates and flow temperatures - runs on unicorn blood ig.
-        self.thermal_conductance = max_heating / (max_hydronics_temp - max_target_temp)
+    def __init__(self, max_hydronics_temp):
+        # Having this heating distribution system only be able to run at a certain temperature to simulate a "dumb" HP
+        # Assumes that the distribution system is large enough to be able to distribute maximum heating requirement
+        self.const_hydronics_temp = max_hydronics_temp
 
     def hydronics_temp(self, Heating_Requirement, room_temp):
-        # P = U * (hydronics_temp - room_temp)
-        
-        hydronics_temp = ( Heating_Requirement / self.thermal_conductance ) + room_temp
 
-        return hydronics_temp
+        return np.ones(len(Heating_Requirement)) * self.const_hydronics_temp
 
 class Heat_Pump():
     def __init__(self, data_path):
@@ -66,11 +64,6 @@ class Heat_Pump():
 
         return Interpolator((x, y), z, method='linear', bounds_error=False, fill_value=None)
     
-    def max_hydronics_temp(self):
-        # find the maximum hydronics temp the heat pump supports        
-        
-        return np.max(Data.column_from_csv(self.data_path, "Flow temperature(°C)"))
-    
     def Calculate_COP(self, output_temp, air_temp, COP_interp_field):
         # Grab COP at a given output temp and outside temp
         
@@ -81,15 +74,16 @@ class Heat_Pump():
         return COP_interp_field(points).reshape(output_temp.shape)
 
 class HP_Controller():
-    def __init__(self, Heat_Pump, Heating_Distribution, max_heat_pump_power):
+    def __init__(self, Heat_Pump, Heating_Distribution, max_heat_pump_power, max_HVAC_power):
         self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
         
         self.max_heat_pump_power = max_heat_pump_power
+        self.max_HVAC_power = max_HVAC_power
         
         self.HP = Heat_Pump
-        self.HD = Heating_Distribution(np.max(Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)")),
-                                       np.max(Data.column_from_csv(self.tool_output_data, "Indoor_temperature.Set-point_θair(ºC)")),
-                                       self.HP.max_hydronics_temp())
+        self.HD = Heating_Distribution
+                  
+                  
 
         self.COP_interp_field = self.HP.interp_init("COP")
 
