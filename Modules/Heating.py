@@ -106,3 +106,36 @@ class HP_Controller():
         electricity_demand_array = np.divide(heating_demand_array, COP_array)
         
         return time_array, heating_demand_array, electricity_demand_array, COP_array, air_temp_array, hydronics_temp_array
+
+class Reverse_HP_Controller():
+    def __init__(self, Heat_Pump, Heating_Distribution, max_heat_pump_power, max_HVAC_power):
+        self.tool_output_data = "Data/XL-BES-Tool_Output.csv"
+        
+        self.max_heat_pump_power = max_heat_pump_power
+        self.max_HVAC_power = max_HVAC_power
+        
+        self.HP = Heat_Pump
+        self.HD = Heating_Distribution
+                  
+        self.COP_interp_field = self.HP.interp_init("COP")
+
+    def controller(self):
+        # returns electricity demand in kWh!
+        
+        time_array = Data.column_from_csv(self.tool_output_data, "Hour_simulation")
+        air_temp_array = Data.column_from_csv(self.tool_output_data, "External temperture (ºC)")
+        # Quick and dirty comparison with GSHP
+        # air_temp_array = np.ones(len(air_temp_array)) * 10
+        inside_temp_array = Data.column_from_csv(self.tool_output_data, "Indoor_temperature.FF_θair(ºC)")
+        heating_demand_array = Data.column_from_csv(self.tool_output_data, "Heating_thermal_load(kW)") 
+        
+        # limit heating demand to max heat pump power
+        heating_demand_array = np.clip(heating_demand_array, 0, self.max_heat_pump_power)
+        
+        hydronics_temp_array = self.HD.interp_flow_temp_heating(heating_demand_array)
+        
+        COP_array = self.HP.Calculate_COP(hydronics_temp_array, air_temp_array, self.COP_interp_field)
+            
+        electricity_demand_array = np.divide(heating_demand_array, COP_array)
+        
+        return time_array, heating_demand_array, electricity_demand_array, COP_array, air_temp_array, hydronics_temp_array
