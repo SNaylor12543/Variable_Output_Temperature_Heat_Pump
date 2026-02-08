@@ -169,6 +169,8 @@ class Reverse_HP_Controller():
         # Calculating cooling electricity demand
         cooling_demand_array = Data.column_from_csv(self.tool_output_data, "Cooling_thermal_load(kW)") 
 
+        cooling_demand_array = np.clip(cooling_demand_array, 0, self.max_HVAC_power)
+
         cooling_hydronics_temp_array = self.HD.interp_flow_temp_cooling(cooling_demand_array)
         
         EER_array = self.HVAC.Calculate_EER(cooling_hydronics_temp_array, air_temp_array, self.EER_interp_field)
