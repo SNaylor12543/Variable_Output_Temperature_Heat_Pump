@@ -64,14 +64,14 @@ class Heat_Pump():
 
         return Interpolator((x, y), z, method='linear', bounds_error=False, fill_value=None)
     
-    def Calculate_COP(self, output_temp, air_temp, COP_interp_field):
+    def interp_call(self, output_temp, air_temp, interp_field):
         # Grab COP at a given output temp and outside temp
         
         output_temp, air_temp = np.broadcast_arrays(output_temp, air_temp)
         
         points = np.stack([output_temp.ravel(), air_temp.ravel()], axis = -1)
 
-        return COP_interp_field(points).reshape(output_temp.shape)
+        return interp_field(points).reshape(output_temp.shape)
 
 class HVAC():
     def __init__(self, data_path):
@@ -90,14 +90,14 @@ class HVAC():
 
         return Interpolator((x, y), z, method='linear', bounds_error=False, fill_value=None)
     
-    def Calculate_EER(self, output_temp, air_temp, EER_interp_field):
+    def interp_call(self, output_temp, air_temp, interp_field):
         # Grab EER at a given output temp and outside temp
         
         output_temp, air_temp = np.broadcast_arrays(output_temp, air_temp)
         
         points = np.stack([output_temp.ravel(), air_temp.ravel()], axis = -1)
 
-        return EER_interp_field(points).reshape(output_temp.shape)
+        return interp_field(points).reshape(output_temp.shape)
 
 class HP_Controller():
     def __init__(self, Heat_Pump, Heating_Distribution, max_heat_pump_power, max_HVAC_power):
@@ -125,7 +125,7 @@ class HP_Controller():
         
         hydronics_temp_array = self.HD.hydronics_temp(heating_demand_array, inside_temp_array)
         
-        COP_array = self.HP.Calculate_COP(hydronics_temp_array, air_temp_array, self.COP_interp_field)
+        COP_array = self.HP.interp_call(hydronics_temp_array, air_temp_array, self.COP_interp_field)
             
         electricity_demand_array = np.divide(heating_demand_array, COP_array)
         
@@ -162,7 +162,7 @@ class Reverse_HP_Controller():
         
         heating_hydronics_temp_array = self.HD.interp_flow_temp_heating(heating_demand_array)
         
-        COP_array = self.HP.Calculate_COP(heating_hydronics_temp_array, air_temp_array, self.COP_interp_field)
+        COP_array = self.HP.interp_call(heating_hydronics_temp_array, air_temp_array, self.COP_interp_field)
             
         heating_electricity_demand_array = np.divide(heating_demand_array, COP_array)
 
@@ -173,7 +173,7 @@ class Reverse_HP_Controller():
 
         cooling_hydronics_temp_array = self.HD.interp_flow_temp_cooling(cooling_demand_array)
         
-        EER_array = self.HVAC.Calculate_EER(cooling_hydronics_temp_array, air_temp_array, self.EER_interp_field)
+        EER_array = self.HVAC.interp_call(cooling_hydronics_temp_array, air_temp_array, self.EER_interp_field)
             
         cooling_electricity_demand_array = np.divide(cooling_demand_array, EER_array)
 
