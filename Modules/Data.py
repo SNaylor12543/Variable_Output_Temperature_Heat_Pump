@@ -10,9 +10,9 @@ def column_from_csv(File_Path, Column_Name):
 
     return Column_Data.copy()
 
-def field_data_from_csv(File_Path, metric, air_temp, flow_temp):
+def field_data_from_csv(file_path, metric, air_temp, flow_temp):
     
-    df = pd.read_csv(File_Path)
+    df = pd.read_csv(file_path)
 
     pivot = df.pivot(
         index=flow_temp,
