@@ -22,10 +22,13 @@ def field_data_from_csv(file_path, metric, air_temp, flow_temp):
 
     # Sorts field
     pivot = pivot.sort_index(axis=0).sort_index(axis=1)
+    
+    # Replace NaN with zero
+    pivot = pivot.fillna(0)
 
     # Extract arrays
     flow_temps = pivot.index.to_numpy()
     air_temps  = pivot.columns.to_numpy()
-    COP = pivot.to_numpy()
+    metric = pivot.to_numpy()
     
-    return flow_temps, air_temps, COP
+    return flow_temps, air_temps, metric

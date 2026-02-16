@@ -243,12 +243,5 @@ class Reverse_HP_Controller():
         EER_array = self.HVAC.interp_call(cooling_hydronics_temp_array, air_temp_array, self.EER_interp_field)
             
         cooling_electricity_demand_array = np.divide(cooling_demand_array, EER_array)
-        
-        # grabbing heating capacity for each hour
-        
-        heating_capacity_array = self.HP.interp_call(heating_hydronics_temp_array, air_temp_array, self.HP_capacity_interp_field)
-        
-        heat_pump_count = np.max(np.divide(heating_demand_array, heating_capacity_array))
-        print("Requires " + str(heat_pump_count) + " heat pumps")
 
         return time_array, air_temp_array, heating_demand_array, heating_electricity_demand_array, heating_hydronics_temp_array, HP_deliver_temp, HP_heating_delivery, HP_heating_electricity_demand_array, COP_array, electric_boiler_power, cooling_demand_array, cooling_electricity_demand_array, cooling_hydronics_temp_array, EER_array
