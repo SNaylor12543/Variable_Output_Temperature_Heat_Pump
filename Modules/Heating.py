@@ -38,14 +38,19 @@ class Heating_Distribution():
         return np.interp(cooling_demand, self.fan_coil_count * cooling_demand_data, flow_temp_data)
 
 class Const_Temp_Heating_Distribution():
-    def __init__(self, max_hydronics_temp):
+    def __init__(self, heating_temp, cooling_temp):
         # Having this heating distribution system only be able to run at a certain temperature to simulate a "dumb" HP
         # Assumes that the distribution system is large enough to be able to distribute maximum heating requirement
-        self.const_hydronics_temp = max_hydronics_temp
+        self.heating_hydronics_temp = heating_temp
+        self.cooling_hydronics_temp = cooling_temp
 
-    def hydronics_temp(self, Heating_Requirement, room_temp):
+    def interp_flow_temp_heating(self, heating_demand):
 
-        return np.ones(len(Heating_Requirement)) * self.const_hydronics_temp
+        return np.ones(len(heating_demand)) * self.heating_hydronics_temp
+
+    def interp_flow_temp_cooling(self, cooling_demand):
+
+        return np.ones(len(cooling_demand)) * self.cooling_hydronics_temp
 
 class Heat_Pump():
     def __init__(self, data_path):
