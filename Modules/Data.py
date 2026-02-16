@@ -22,6 +22,9 @@ def field_data_from_csv(File_Path, metric, air_temp, flow_temp):
 
     # Sorts field
     pivot = pivot.sort_index(axis=0).sort_index(axis=1)
+        
+    # Replace NaN with zero
+    pivot = pivot.fillna(0)
 
     # Extract arrays
     flow_temps = pivot.index.to_numpy()
