@@ -181,8 +181,8 @@ class HP_Controller():
         return time_array, heating_demand_array, electricity_demand_array, COP_array, air_temp_array, hydronics_temp_array
 
 class Reverse_HP_Controller():
-    def __init__(self, Heat_Pump, HP_count, HVAC, Heating_Distribution, max_heat_pump_power, max_HVAC_power):
-        self.tool_output_data = "Data/XL-BES-Tool_Output_17-02.csv"
+    def __init__(self, data_path, Heat_Pump, HP_count, HVAC, Heating_Distribution, max_heat_pump_power, max_HVAC_power):
+        self.tool_output_data = data_path
         
         self.HP_count = HP_count
         

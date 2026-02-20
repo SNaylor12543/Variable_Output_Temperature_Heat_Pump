@@ -10,6 +10,17 @@ def column_from_csv(File_Path, Column_Name):
 
     return Column_Data.copy()
 
+def write_to_csv(File_path, Column_name, array):
+    
+    import pandas as pd
+
+    df = pd.read_csv(File_path)
+
+    df[Column_name] = array
+
+    df.to_csv(File_path, index=False)
+
+
 def field_data_from_csv(file_path, metric, air_temp, flow_temp):
     
     df = pd.read_csv(file_path)
