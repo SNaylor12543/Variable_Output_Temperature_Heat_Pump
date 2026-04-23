@@ -60,6 +60,7 @@ class Heat_Pump():
         self.flow_temp_name = "Flow temperature(°C)"
         
         self.operational_air_temps, self.max_operational_flow_temp, self.min_operational_flow_temp = self.operating_condition_init()
+        print(self.operating_condition_init())
         
     def interp_init(self, metric):
         # initialise interpolation field for different metrics of heat pump performance
@@ -110,9 +111,13 @@ class Heat_Pump():
         
         indices = np.digitize(air_temp, self.operational_air_temps) - 1
 
-        indices = np.clip(indices,0, len(self.max_operational_flow_temp) - 1)
+        indices = np.clip(indices,0, len(self.max_operational_flow_temp))
         
         operational_flow_temps = self.max_operational_flow_temp[indices]
+
+        # to take care of when the max flow temp decreases
+        override_indices = [i for i, x in enumerate(air_temp) if x > 20]
+        operational_flow_temps[override_indices] = [50] * len(override_indices)
         
         out_of_operation_indices = [i for i, x in enumerate(operational_flow_temps - flow_temp) if x < 0] 
         
