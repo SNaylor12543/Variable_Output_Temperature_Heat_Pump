@@ -60,7 +60,6 @@ class Heat_Pump():
         self.flow_temp_name = "Flow temperature(°C)"
         
         self.operational_air_temps, self.max_operational_flow_temp, self.min_operational_flow_temp = self.operating_condition_init()
-        print(self.operating_condition_init())
         
     def interp_init(self, metric):
         # initialise interpolation field for different metrics of heat pump performance
